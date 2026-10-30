@@ -1,8 +1,4 @@
-# 大肥鱼心情（astrbot\_plugin\_dfy\_mood）
-
-<p align="center">
-  <img src="logo.png" width="180" alt="大肥鱼心情 Logo">
-</p>
+# <img src="logo.png" width="52" alt="大肥鱼心情 Logo"> 大肥鱼心情（astrbot\_plugin\_dfy\_mood）
 
 给 AstrBot 养的 AI 加一颗**会记仇、会兴奋、会吃醋、会慢慢消气**的心。
 
@@ -18,37 +14,40 @@
 
 ## 目录
 
-- [仓库与镜像](#仓库与镜像)
-- [效果示例](#效果示例)
-- [功能](#功能)
-- [部署](#部署)
-- [配置项](#配置项)
-- [命令](#命令)
-- [实现原理](#实现原理)
-- [项目结构](#项目结构)
-- [常见问题](#常见问题)
-- [卸载](#卸载)
-- [隐私](#隐私)
-- [扩展开发](#扩展开发)
+- [仓库与镜像](#repo)
+- [效果示例](#demo)
+- [功能](#features)
+- [部署](#install)
+- [配置项](#config)
+- [命令](#commands)
+- [实现原理](#how)
+- [项目结构](#structure)
+- [常见问题](#faq)
+- [卸载](#uninstall)
+- [隐私](#privacy)
+- [扩展开发](#extend)
 - [Roadmap](#roadmap)
-- [开源前待办（作者自查）](#开源前待办作者自查)
-- [致谢](#致谢)
-- [许可证](#许可证)
+- [致谢](#thanks)
+- [许可证](#license)
 
 ***
 
+<a id="repo"></a>
+
 ## 仓库与镜像
 
-| 平台 | 地址 | 定位 |
-|---|---|---|
+| 平台     | 地址                                                   | 定位                          |
+| ------ | ---------------------------------------------------- | --------------------------- |
 | GitHub | https://github.com/lovernick/astrbot_plugin_dfy_mood | **主仓库**，唯一接受 Issue / PR 的地方 |
-| Gitee | https://gitee.com/lovernick/astrbot_plugin_dfy_mood | 镜像仓库，便于国内访问，仅同步代码 |
+| Gitee  | https://gitee.com/lovernick/astrbot_plugin_dfy_mood  | 镜像仓库，便于国内访问，仅同步代码           |
 
 - 新版本一律先在 GitHub 发布，Gitee 随后同步。
 - 在 Gitee 提交的 PR 不会被合并，请统一到 GitHub 提交。
 - 两个仓库的代码内容一致；如发现差异，以 GitHub 为准。
 
 ***
+
+<a id="demo"></a>
 
 ## 效果示例
 
@@ -73,17 +72,19 @@
 
 ***
 
+<a id="features"></a>
+
 ## 功能
 
 ### 1. 五维心情，量化但不生硬
 
-| 维度          | 基线 | 默认半衰期      | 说明               |
-| ----------- | -- | ---------- | ---------------- |
-| 愉悦 valence  | 60 | 3 小时       | 被夸、被哄会涨，被骂会掉     |
-| 活跃 arousal  | 55 | 3 小时       | 情绪激烈程度           |
-| 精力 energy   | 70 | 2 小时       | 会随时间自动增减，深夜很低    |
-| 亲密 intimacy | 50 | 168 小时（一周） | 关系度，变化最慢         |
-| 吃醋 jealousy | 0  | 1.5 小时     | 独立维度，提到别的 AI 才会涨 |
+| 维度          | 基线  | 默认半衰期      | 说明               |
+| ----------- | --- | ---------- | ---------------- |
+| 愉悦 valence  | 60  | 3 小时       | 被夸、被哄会涨，被骂会掉     |
+| 活跃 arousal  | 55  | 3 小时       | 情绪激烈程度           |
+| 精力 energy   | 70  | 2 小时       | 会随时间自动增减，深夜很低    |
+| 亲密 intimacy | 50  | 168 小时（一周） | 关系度，变化最慢         |
+| 吃醋 jealousy | 0   | 1.5 小时     | 独立维度，提到别的 AI 才会涨 |
 
 所有数值取值 0–100，最终都会向基线缓慢回归——**负面情绪不会瞬间消失**，这就是"记仇"的来源。
 
@@ -91,17 +92,17 @@
 
 按优先级从高到低取第一个命中：
 
-| 标签 | 条件                          |
-| -- | --------------------------- |
-| 吃醋 | 吃醋 ≥ 28                     |
-| 烦躁 | 愉悦 < 30 且 活跃 ≥ 60           |
-| 委屈 | 愉悦 < 35                     |
-| 低落 | 愉悦 < 48                     |
-| 困了 | 精力 < 35                     |
-| 无聊 | 精力 < 50 且 愉悦 < 65           |
-| 撒娇 | 亲密 ≥ 70 且 愉悦 ≥ 60 且 活跃 ≥ 55 |
-| 开心 | 愉悦 ≥ 75 且 活跃 ≥ 60           |
-| 平静 | 以上都不满足（兜底）                  |
+| 标签  | 条件                          |
+| --- | --------------------------- |
+| 吃醋  | 吃醋 ≥ 28                     |
+| 烦躁  | 愉悦 < 30 且 活跃 ≥ 60           |
+| 委屈  | 愉悦 < 35                     |
+| 低落  | 愉悦 < 48                     |
+| 困了  | 精力 < 35                     |
+| 无聊  | 精力 < 50 且 愉悦 < 65           |
+| 撒娇  | 亲密 ≥ 70 且 愉悦 ≥ 60 且 活跃 ≥ 55 |
+| 开心  | 愉悦 ≥ 75 且 活跃 ≥ 60           |
+| 平静  | 以上都不满足（兜底）                  |
 
 每种标签再按"偏离基线的幅度"分 **轻 / 中 / 强** 三档，强档也只影响语气，不会真的骂人或冷战。
 
@@ -163,6 +164,8 @@
 
 ***
 
+<a id="install"></a>
+
 ## 部署
 
 ### 环境要求
@@ -204,6 +207,8 @@ git clone https://github.com/lovernick/astrbot_plugin_dfy_mood.git
 
 ***
 
+<a id="config"></a>
+
 ## 配置项
 
 在 WebUI 插件配置页修改：
@@ -228,6 +233,8 @@ git clone https://github.com/lovernick/astrbot_plugin_dfy_mood.git
 - 群聊也想有心情：关闭 `private_only`（但群聊会按发言人分别记录）。
 
 ***
+
+<a id="commands"></a>
 
 ## 命令
 
@@ -267,6 +274,8 @@ git clone https://github.com/lovernick/astrbot_plugin_dfy_mood.git
 ```
 
 ***
+
+<a id="how"></a>
 
 ## 实现原理
 
@@ -331,6 +340,8 @@ data/plugin_data/astrbot_plugin_dfy_mood/mood.db
 
 ***
 
+<a id="structure"></a>
+
 ## 项目结构
 
 ```
@@ -350,6 +361,8 @@ astrbot_plugin_dfy_mood/
 ```
 
 ***
+
+<a id="faq"></a>
 
 ## 常见问题
 
@@ -406,6 +419,8 @@ astrbot_plugin_dfy_mood/
 
 ***
 
+<a id="uninstall"></a>
+
 ## 卸载
 
 1. WebUI 插件页禁用并删除插件；
@@ -416,6 +431,8 @@ astrbot_plugin_dfy_mood/
 
 ***
 
+<a id="privacy"></a>
+
 ## 隐私
 
 - 所有数据保存在本机 SQLite 文件中。
@@ -423,6 +440,8 @@ astrbot_plugin_dfy_mood/
 - 只保存心情数值和事件类型/原因，不保存聊天原文。
 
 ***
+
+<a id="extend"></a>
 
 ## 扩展开发
 
@@ -443,15 +462,7 @@ astrbot_plugin_dfy_mood/
 
 ***
 
-## 开源前待办（作者自查）
-
-- [x] `metadata.yaml` 里补 `repo` 地址
-- [x] 确认 `author` 字段（lovernick）
-- [x] 添加 `LICENSE`（MIT）
-- [x] 添加 `logo.png`（插件市场展示用）
-- [ ] 在插件市场发布并填写仓库地址
-
-***
+<a id="thanks"></a>
 
 ## 致谢
 
@@ -459,6 +470,8 @@ astrbot_plugin_dfy_mood/
 - [NapCatQQ](https://github.com/NapNeko/NapCatQQ)：QQ 协议端
 
 ***
+
+<a id="license"></a>
 
 ## 许可证
 
