@@ -57,5 +57,29 @@
     "description": "吃醋消退半衰期（小时）",
     "default": 1.5,
     "hint": "吃醋不会立刻消失，被哄之后消退更快。"
+  },
+  "tool_enable": {
+    "type": "bool",
+    "description": "允许模型自评情绪（function calling）",
+    "default": true,
+    "hint": "开启后注册 update_mood 工具，由主模型判断语义并择机调用。不需要额外 API Key，复用当前对话模型。"
+  },
+  "tool_hint": {
+    "type": "bool",
+    "description": "在疑似情绪消息里提示模型可调用工具",
+    "default": true,
+    "hint": "只在消息包含情绪候选词时追加一句提示，减少无效调用。"
+  },
+  "tool_max_intensity": {
+    "type": "float",
+    "description": "工具单次影响上限（0-1）",
+    "default": 1.0,
+    "hint": "限制模型给出的强度值，防止一次调用让心情跳变过大。"
+  },
+  "tool_cooldown_seconds": {
+    "type": "int",
+    "description": "同类事件工具冷却（秒）",
+    "default": 60,
+    "hint": "同一种情绪事件在冷却时间内重复调用不会生效。"
   }
 }
