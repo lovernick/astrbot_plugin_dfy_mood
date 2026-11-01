@@ -5,3 +5,6 @@ __pycache__/
 .vscode/
 .screenshots/
 .DS_Store
+# AstrBot 运行时目录，可能含有 dashboard 凭据，不要提交
+data/
+.trae-html-share-packages/
