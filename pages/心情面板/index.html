@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>心情面板</title>
+  <script src="/api/plugin/page/bridge-sdk.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script src="echarts.min.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="deco.jpg" alt="大肥鱼" class="brand-avatar" />
+        <div>
+          <h1>大肥鱼心情面板</h1>
+          <p class="subtitle" id="subtitle">正在读取心情…</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <label class="select-wrap">
+          <span>会话</span>
+          <select id="session-select"></select>
+        </label>
+        <div class="segmented" id="range-switch">
+          <button type="button" data-range="24h" class="active">24 小时</button>
+          <button type="button" data-range="7d">7 天</button>
+          <button type="button" data-range="30d">30 天</button>
+        </div>
+        <span class="auto-hint">每 8 秒自动刷新</span>
+        <button type="button" class="ghost" id="refresh-btn">刷新</button>
+      </div>
+    </header>
+
+    <main>
+      <nav class="tabs" id="tabs">
+        <button type="button" data-tab="overview" class="active">总览</button>
+        <button type="button" data-tab="history">历史</button>
+        <button type="button" data-tab="sessions">会话</button>
+        <button type="button" data-tab="settings">设置</button>
+      </nav>
+
+      <section class="panel active" id="tab-overview">
+        <div class="grid-two">
+          <article class="card mood-card">
+            <div class="mood-head">
+              <div>
+                <p class="eyebrow">此刻心情</p>
+                <h2 id="mood-label">平静</h2>
+                <p class="mood-desc" id="mood-desc">还没有记录到情绪变化</p>
+              </div>
+              <div class="mood-badge" id="mood-badge">强度 · 轻</div>
+            </div>
+            <div class="rings" id="rings"></div>
+          </article>
+
+          <article class="card feed-card">
+            <div class="card-head">
+              <h3>最近的变化</h3>
+              <span class="muted" id="feed-hint">最近 8 条</span>
+            </div>
+            <ul class="feed" id="feed"></ul>
+          </article>
+        </div>
+
+        <article class="card">
+          <div class="card-head">
+            <h3>心情曲线</h3>
+            <span class="muted">悬停查看具体数值</span>
+          </div>
+          <div class="chart" id="chart-overview"></div>
+        </article>
+      </section>
+
+      <section class="panel" id="tab-history">
+        <article class="card">
+          <div class="card-head">
+            <h3>五维变化</h3>
+            <span class="muted" id="history-hint">点的疏密取决于聊天频率</span>
+          </div>
+          <div class="chart tall" id="chart-history"></div>
+        </article>
+        <div class="grid-two">
+          <article class="card">
+            <div class="card-head"><h3>事件类型</h3></div>
+            <div class="chart" id="chart-kinds"></div>
+          </article>
+          <article class="card">
+            <div class="card-head"><h3>活跃时段</h3></div>
+            <div class="chart" id="chart-hours"></div>
+          </article>
+        </div>
+        <article class="card">
+          <div class="card-head">
+            <h3>情绪事件流</h3>
+            <span class="muted" id="event-hint"></span>
+          </div>
+          <ul class="feed long" id="event-feed"></ul>
+        </article>
+      </section>
+
+      <section class="panel" id="tab-sessions">
+        <article class="card">
+          <div class="card-head">
+            <h3>会话列表</h3>
+            <span class="muted">最近 30 天内有互动的会话</span>
+          </div>
+          <table class="session-table">
+            <thead>
+              <tr>
+                <th>会话</th>
+                <th>心情</th>
+                <th>亲密</th>
+                <th>最近互动</th>
+                <th>消息数</th>
+              </tr>
+            </thead>
+            <tbody id="session-body"></tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="panel" id="tab-settings">
+        <article class="card settings-card">
+          <div class="card-head">
+            <h3>参数设置</h3>
+            <span class="muted">保存后会自动重载插件</span>
+          </div>
+          <form id="settings-form" class="settings-form"></form>
+          <div class="settings-actions">
+            <button type="submit" form="settings-form" class="primary">保存设置</button>
+            <span class="muted" id="settings-status"></span>
+          </div>
+        </article>
+        <article class="card danger-card">
+          <div class="card-head">
+            <h3>危险操作</h3>
+            <span class="muted">只影响当前选中的会话</span>
+          </div>
+          <div class="danger-row">
+            <button type="button" class="ghost danger" id="reset-btn">重置当前会话心情</button>
+            <span class="muted">回到基线值，历史事件不会删除</span>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" hidden></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

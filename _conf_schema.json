@@ -81,5 +81,11 @@
     "description": "同类事件工具冷却（秒）",
     "default": 60,
     "hint": "同一种情绪事件在冷却时间内重复调用不会生效。"
+  },
+  "snapshot_retention_days": {
+    "type": "int",
+    "description": "心情面板快照保留天数",
+    "default": 90,
+    "hint": "只影响「心情面板」里的历史曲线数据，调小会让图表历史变短。"
   }
 }

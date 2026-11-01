@@ -50,6 +50,11 @@ except ImportError:  # 兼容以顶层模块方式加载
     )
     from core.store import MoodStore
 
+try:
+    from .webapi import register_web_apis
+except ImportError:  # 兼容以顶层模块方式加载
+    from webapi import register_web_apis
+
 PLUGIN_NAME = "astrbot_plugin_dfy_mood"
 DEFAULT_HALF_LIVES = {
     "valence": 3.0,
@@ -112,6 +117,10 @@ class DfyMoodPlugin(Star):
         # update_mood 工具的去重与冷却状态
         self._tool_msg: dict[str, str] = {}
         self._tool_cooldown: dict[tuple[str, str], float] = {}
+        try:
+            register_web_apis(self)
+        except Exception as exc:
+            logger.warning(f"注册心情面板接口失败: {exc}")
         logger.info("大肥鱼心情插件已加载")
 
     # ------------------------------------------------------------------ 配置
@@ -181,7 +190,20 @@ class DfyMoodPlugin(Star):
         self.store.save(state)
         for event in events:
             self.store.log_event(key, event, now)
+        if events:
+            self._record_snapshot(state, events[0].reason, now)
         return state, events
+
+    def _record_snapshot(self, state, trigger: str, ts: float | None = None) -> None:
+        """写入界面用的时序快照，失败不影响主流程。"""
+        try:
+            days = int(self._cfg("snapshot_retention_days", 90))
+        except (TypeError, ValueError):
+            days = 90
+        try:
+            self.store.record_snapshot(state, ts or time.time(), trigger, days)
+        except Exception as exc:
+            self.logger.warning(f"写入心情快照失败: {exc}")
 
     async def _peek(self, key: str):
         """只读地推进到当前时刻，不改变互动时间。"""
@@ -318,6 +340,7 @@ class DfyMoodPlugin(Star):
                 self.store.save(state)
 
             self.store.log_event(key, mood_event, now)
+            self._record_snapshot(state, mood_event.reason, now)
             if msg_id:
                 self._tool_msg[key] = msg_id
             self._tool_cooldown[(key, kind)] = now
@@ -455,6 +478,7 @@ class DfyMoodPlugin(Star):
             state.label = derive_label(state)
             state.updated_at = time.time()
             self.store.save(state)
+            self._record_snapshot(state, "手动重置")
         return "心情已重置为平静。"
 
     async def _set_field(self, key: str, field_name: str, raw_value: str) -> str:
@@ -472,6 +496,7 @@ class DfyMoodPlugin(Star):
             state.label = derive_label(state)
             state.updated_at = time.time()
             self.store.save(state)
+            self._record_snapshot(state, f"手动调整 {FIELD_LABEL[field]}")
         return f"{FIELD_LABEL[field]}已调整为 {value:.0f}，当前心情：{state.label}"
 
     # -------------------------------------------------------------- 生命周期
